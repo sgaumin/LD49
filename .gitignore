@@ -1,0 +1,98 @@
+=============== 
+Lightmap generated
+===============
+LightmapSnapshot*
+LightmapSnapshot.asset
+LightmapSnapshot.asset.meta
+Lightmap-*.png
+Lightmap-*.png.meta
+Lightmap-*
+Lightmap-*.exr
+Lightmap-*.exr.meta
+Assets/LargeFiles/
+Assets/LargeFiles.meta
+
+===============
+Builds and Others
+===============
+Builds/
+Wireframes/
+Ref/
+
+=============== 
+Unity generated
+===============
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+Logs/
+
+# Asset meta data should only be ignored when the corresponding asset is also ignored
+!/[Aa]ssets/**/*.meta
+
+=====================================
+Visual Studio / MonoDevelop generated
+=====================================
+ExportedObj/
+obj/
+*.svd
+*.userprefs
+/*.csproj
+*.pidb
+*.suo
+/*.sln
+*.user
+*.unityproj
+*.booproj
+/*.vs
+
+# Common IntelliJ Platform excludes
+
+# User specific
+**/.idea/**/workspace.xml
+**/.idea/**/tasks.xml
+**/.idea/shelf/*
+**/.idea/dictionaries
+
+# Sensitive or high-churn files
+**/.idea/**/dataSources/
+**/.idea/**/dataSources.ids
+**/.idea/**/dataSources.xml
+**/.idea/**/dataSources.local.xml
+**/.idea/**/sqlDataSources.xml
+**/.idea/**/dynamic.xml
+
+# Rider
+# Rider auto-generates .iml files, and contentModel.xml
+**/.idea/**/*.iml
+**/.idea/**/contentModel.xml
+**/.idea/**/modules.xml
+
+*.suo
+*.user
+.vs/
+[Bb]in/
+[Oo]bj/
+_UpgradeReport_Files/
+
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+============
+OS generated
+============
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+fmod_editor.log
+
+Assets/Plugins/FMOD/Cache/Editor/FMODStudioCache.asset
