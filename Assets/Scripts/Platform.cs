@@ -18,10 +18,12 @@ public abstract class Platform : MonoBehaviour
 	[SerializeField] protected bool activeMovementX;
 	[SerializeField] protected float movementXDuration = 1f;
 	[SerializeField] protected float movementXValue = 1f;
+	[SerializeField] private bool movementXReverse;
 	[Space]
 	[SerializeField] protected bool activeMovementY;
 	[SerializeField] protected float movementYDuration = 1f;
 	[SerializeField] protected float movementYValue = 1f;
+	[SerializeField] private bool movementYReverse;
 	[Space]
 	[SerializeField] protected Ease movementEase = Ease.InOutSine;
 
@@ -53,10 +55,10 @@ public abstract class Platform : MonoBehaviour
 	public void CheckMovements()
 	{
 		if (activeMovementX)
-			transform.DOLocalMoveX(movementXValue, movementXDuration).SetRelative().SetEase(movementEase).SetLoops(-1, LoopType.Yoyo);
+			transform.DOLocalMoveX(movementXValue * (movementXReverse ? -1 : 1), movementXDuration).SetRelative().SetEase(movementEase).SetLoops(-1, LoopType.Yoyo);
 
 		if (activeMovementY)
-			transform.DOLocalMoveY(movementYValue, movementYDuration).SetRelative().SetEase(movementEase).SetLoops(-1, LoopType.Yoyo);
+			transform.DOLocalMoveY(movementYValue * (movementYReverse ? -1 : 1), movementYDuration).SetRelative().SetEase(movementEase).SetLoops(-1, LoopType.Yoyo);
 	}
 
 	public void ShowPivot()
@@ -103,7 +105,7 @@ public abstract class Platform : MonoBehaviour
 
 	private void Disapear()
 	{
-		transform.DOScale(0f, 0.2f).SetEase(Ease.InBack).OnComplete(() => Destroy(gameObject));
+		transform.DOScale(0f, 1f).SetEase(Ease.InBack).OnComplete(() => Destroy(gameObject));
 	}
 
 	private void OnDestroy()

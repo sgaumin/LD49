@@ -41,11 +41,17 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: BackgroundEffect
+    uniqueID: 1840501351
+    locked: 0
   - name: Platform
     uniqueID: 267315281
     locked: 0
   - name: Slot
     uniqueID: 3725776081
+    locked: 0
+  - name: Bullet
+    uniqueID: 667728391
     locked: 0
   - name: Player
     uniqueID: 3457122837

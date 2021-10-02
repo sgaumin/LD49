@@ -34,10 +34,10 @@ public class SlotsManager : MonoBehaviour
 			var slot = Instantiate(Prefabs.slotPrefab, child);
 			slots.Add(slot);
 
-			slot.transform.localPosition = slot.transform.localPosition.withY(slot.transform.localPosition.y - 2f);
-			slot.transform.DOLocalMoveY(0f, 0.2f).SetEase(Ease.OutBack);
+			slot.transform.localPosition = slot.transform.localPosition.withY(slot.transform.localPosition.y - 1f);
+			slot.transform.DOLocalMoveY(0f, 1f).SetEase(Ease.OutBack);
 
-			yield return new WaitForSeconds(0.2f);
+			yield return new WaitForSeconds(0.5f);
 		}
 	}
 
