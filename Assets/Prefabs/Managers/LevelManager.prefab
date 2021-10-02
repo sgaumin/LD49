@@ -173,6 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04dc52d7a03854747abbc90cc4458624, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelName: 
   timer: 10
   bulletCount: 10
   gameMusic:
@@ -236,7 +237,7 @@ MonoBehaviour:
   m_ImpulseDefinition:
     m_ImpulseChannel: 1
     m_RawSignal: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
-    m_AmplitudeGain: 1.5
+    m_AmplitudeGain: 1.8
     m_FrequencyGain: 1
     m_RepeatMode: 0
     m_Randomize: 1

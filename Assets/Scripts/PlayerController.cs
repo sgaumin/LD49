@@ -27,6 +27,22 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	[SerializeField] private float resetPushingDuration = 0.2f;
 	[SerializeField] private float checkGroundTiming = 0.05f;
 
+	[Header("Breathing Animations")]
+	[SerializeField] private float stretchingXFactor = 0.8f;
+	[Space]
+	[SerializeField] private float stretchingYFactor = 1.2f;
+	[Space]
+	[SerializeField] private float stretchingDuration = 1f;
+	[SerializeField] private Ease stretchingEase = Ease.InOutSine;
+
+	[Header("Pushing Animations")]
+	[SerializeField] private float stretchingPushingXFactor = 0.8f;
+	[Space]
+	[SerializeField] private float stretchingPushingYFactor = 1.2f;
+	[Space]
+	[SerializeField] private float stretchingPushingDuration = 1f;
+	[SerializeField] private Ease stretchingPushingEase = Ease.OutCubic;
+
 	[Header("Shooting")]
 	[SerializeField] private float shootingReload = 0.2f;
 	[SerializeField] private Transform bulletSpawn;
@@ -50,6 +66,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	private int bulletCount;
 	private float startGravity;
 	private bool canPush;
+	private Vector3 startLocalScale;
 
 	private void Awake()
 	{
@@ -73,6 +90,28 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		canCheckGround = true;
 		canPush = true;
 		startGravity = Body.gravityScale;
+
+		// Breathing Animation
+		startLocalScale = transform.localScale;
+		SetBreathingAnimation();
+	}
+
+	public void SetBreathingAnimation()
+	{
+		transform?.DOKill();
+		transform.localScale = startLocalScale;
+
+		transform.DOScaleX(stretchingXFactor * startLocalScale.x, stretchingDuration).SetEase(stretchingEase).SetLoops(-1, LoopType.Yoyo);
+		transform.DOScaleY(stretchingYFactor * startLocalScale.y, stretchingDuration).SetEase(stretchingEase).SetLoops(-1, LoopType.Yoyo);
+	}
+
+	private void SetPushingAnimation()
+	{
+		transform?.DOKill();
+		transform.localScale = startLocalScale;
+
+		transform.DOScaleX(stretchingPushingXFactor * startLocalScale.x, stretchingPushingDuration).SetEase(stretchingPushingEase);
+		transform.DOScaleY(stretchingPushingYFactor * startLocalScale.y, stretchingPushingDuration).SetEase(stretchingPushingEase);
 	}
 
 	private void Update()
@@ -83,6 +122,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 			{
 				StartCoroutine(ResetPushing());
 
+				SetPushingAnimation();
 				isPushingGround = true;
 				StopReleaseGravity();
 				Body.gravityScale *= pushingGravityModifier;
@@ -129,9 +169,11 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 						if (isPushingGround)
 						{
 							isPushingGround = false;
-							ReleaseGravity();
 							colliders[i].GetComponent<BasicPlatform>().Push(transform.position);
 						}
+
+						var p = Instantiate(Prefabs.smallImpactEffect);
+						p.transform.position = check.position;
 
 						GameController.GenerateImpulse();
 
@@ -165,6 +207,8 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	{
 		Body.gravityScale = startGravity;
 		Body.gravityScale *= releaseGravityModifier;
+		yield return new WaitForSeconds(0.02f);
+		Body.AddForce(Vector2.up * jumpForce);
 		yield return new WaitForSeconds(releaseGravityDuration);
 		Body.gravityScale = startGravity;
 	}
@@ -203,11 +247,13 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 	private void OnLanding()
 	{
-		Body.AddForce(Vector2.up * jumpForce);
+		SetBreathingAnimation();
+		ReleaseGravity();
 	}
 
 	public void Kill()
 	{
+		SetBreathingAnimation();
 		GameController.StartShootingPhase();
 	}
 

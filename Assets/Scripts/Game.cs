@@ -33,6 +33,7 @@ public class Game : GameSystem
 	public static Game Instance { get; private set; }
 
 	[Header("Level Parameters")]
+	[SerializeField] private string levelName;
 	[SerializeField] private int timer = 10;
 	[SerializeField] private int bulletCount = 4;
 
@@ -117,6 +118,7 @@ public class Game : GameSystem
 		}
 	}
 	public int Timer => timer;
+	public string LevelName => levelName;
 	public int BulletCount => bulletCount;
 	public Transform Spawn => spawnPlayer;
 
@@ -170,6 +172,7 @@ public class Game : GameSystem
 		if (LevelState == LevelState.Preparation && Input.GetButtonDown("Action"))
 		{
 			LevelState = LevelState.Building;
+			ChangePhase();
 		}
 		if (Input.GetKeyDown(KeyCode.R))
 		{
@@ -186,11 +189,19 @@ public class Game : GameSystem
 		player.transform.position = spawnPlayer.position;
 	}
 
+	private void ChangePhase()
+	{
+		InverseColor(0.1f);
+		GenerateImpulse();
+		Player.SetBreathingAnimation();
+	}
+
 	public void StartShootingPhase()
 	{
 		if (LevelState == LevelState.Building)
 		{
 			LevelState = LevelState.Transition;
+			ChangePhase();
 		}
 	}
 
@@ -213,6 +224,8 @@ public class Game : GameSystem
 	public void EndLevel()
 	{
 		LevelState = LevelState.End;
+		ChangePhase();
+
 		StartCoroutine(EndLevelCore());
 	}
 
@@ -222,8 +235,11 @@ public class Game : GameSystem
 		foreach (var platform in platforms)
 		{
 			platform.Disapear();
-			yield return new WaitForSeconds(0.3f);
+			yield return new WaitForSeconds(0.35f);
 		}
+
+		Player.transform.DOMove(Spawn.position, 1f).SetEase(Ease.OutCirc);
+
 	}
 
 	public void SetZoom(float value, float duration, Ease ease)

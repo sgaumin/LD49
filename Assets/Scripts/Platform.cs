@@ -104,7 +104,7 @@ public abstract class Platform : MonoBehaviour
 
 	public void Disapear()
 	{
-		transform.DOScale(0f, 1f).SetEase(Ease.InSine).OnComplete(() => Destroy(gameObject));
+		transform.DOScale(0f, 0.25f).SetEase(Ease.InSine).OnComplete(() => Destroy(gameObject));
 	}
 
 	private void OnDestroy()

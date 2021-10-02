@@ -11,7 +11,7 @@ public class SlotsManager : MonoBehaviour
 {
 	public static SlotsManager Instance { get; private set; }
 
-	private List<Slot> slots = new List<Slot>();
+	public List<Slot> Slots { get; private set; } = new List<Slot>();
 
 	private void Awake()
 	{
@@ -32,7 +32,7 @@ public class SlotsManager : MonoBehaviour
 				continue;
 
 			var slot = Instantiate(Prefabs.slotPrefab, child);
-			slots.Add(slot);
+			Slots.Add(slot);
 
 			slot.transform.localPosition = slot.transform.localPosition.withY(slot.transform.localPosition.y - 1f);
 			slot.transform.DOLocalMoveY(0f, 1f).SetEase(Ease.OutBack);
@@ -43,7 +43,7 @@ public class SlotsManager : MonoBehaviour
 
 	public void CheckAllComplete()
 	{
-		if (GameController.LevelState == LevelState.Shooting && slots.All(x => x.IsComplete))
+		if (GameController.LevelState == LevelState.Shooting && Slots.All(x => x.IsComplete))
 		{
 			GameController.EndLevel();
 		}

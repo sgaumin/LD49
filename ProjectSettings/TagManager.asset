@@ -47,6 +47,9 @@ TagManager:
   - name: Platform
     uniqueID: 267315281
     locked: 0
+  - name: Borders
+    uniqueID: 300522753
+    locked: 0
   - name: ShootingRail
     uniqueID: 1665723631
     locked: 0
@@ -58,6 +61,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 3457122837
+    locked: 0
+  - name: FrontEffects
+    uniqueID: 406539933
     locked: 0
   - name: HUD
     uniqueID: 3255022373
