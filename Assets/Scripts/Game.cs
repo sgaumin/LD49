@@ -2,6 +2,8 @@ using Cinemachine;
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using Tools.Utils;
 using UnityEngine;
@@ -211,6 +213,17 @@ public class Game : GameSystem
 	public void EndLevel()
 	{
 		LevelState = LevelState.End;
+		StartCoroutine(EndLevelCore());
+	}
+
+	private IEnumerator EndLevelCore()
+	{
+		List<BasicPlatform> platforms = FindObjectsOfType<BasicPlatform>().ToList();
+		foreach (var platform in platforms)
+		{
+			platform.Disapear();
+			yield return new WaitForSeconds(0.3f);
+		}
 	}
 
 	public void SetZoom(float value, float duration, Ease ease)

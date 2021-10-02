@@ -35,7 +35,6 @@ public abstract class Platform : MonoBehaviour
 	private void Awake()
 	{
 		GameController.OnBuildingPhase += OnStart;
-		GameController.OnEndPhase += Disapear;
 	}
 
 	protected virtual void OnStart()
@@ -103,14 +102,13 @@ public abstract class Platform : MonoBehaviour
 		transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, targetAngle));
 	}
 
-	private void Disapear()
+	public void Disapear()
 	{
-		transform.DOScale(0f, 1f).SetEase(Ease.InBack).OnComplete(() => Destroy(gameObject));
+		transform.DOScale(0f, 1f).SetEase(Ease.InSine).OnComplete(() => Destroy(gameObject));
 	}
 
 	private void OnDestroy()
 	{
 		GameController.OnBuildingPhase -= OnStart;
-		GameController.OnEndPhase -= Disapear;
 	}
 }

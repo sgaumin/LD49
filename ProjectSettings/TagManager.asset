@@ -47,6 +47,9 @@ TagManager:
   - name: Platform
     uniqueID: 267315281
     locked: 0
+  - name: ShootingRail
+    uniqueID: 1665723631
+    locked: 0
   - name: Slot
     uniqueID: 3725776081
     locked: 0
