@@ -7,7 +7,7 @@ using Tools.Utils;
 using UnityEngine;
 using static Facade;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, ICanTakeDamage
 {
 	private const float checkGroundedRadius = .2f;
 
@@ -112,6 +112,8 @@ public class PlayerController : MonoBehaviour
 							colliders[i].GetComponent<BasicPlatform>().Push(transform.position);
 						}
 
+						GameController.GenerateImpulse();
+
 						StartCoroutine(ResetGroupCheck());
 						break;
 					}
@@ -176,7 +178,7 @@ public class PlayerController : MonoBehaviour
 		OnShoot?.Invoke();
 
 		var bullet = Instantiate(Prefabs.bulletPrefab);
-		bullet.transform.position = bulletSpawn.position;
+		bullet.transform.position = bulletSpawn.transform.position;
 		bulletCount++;
 
 		yield return new WaitForSeconds(shootingReload);

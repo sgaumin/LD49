@@ -174,6 +174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timer: 10
+  bulletCount: 10
   gameMusic:
     isUsingClips: 0
     clip: {fileID: 0}
@@ -191,6 +192,7 @@ MonoBehaviour:
     multiplier: 5
   player: {fileID: 0}
   spawnPlayer: {fileID: 0}
+  fadDuration: 0.2
   _fader:
     _source: 2
     _localReference: {fileID: 0}
@@ -342,8 +344,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ChannelMask: 1
-  m_Gain: 1
-  m_Use2DDistance: 0
+  m_Gain: 0.5
+  m_Use2DDistance: 1
 --- !u!1001 &576153364358352620
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -15,4 +15,5 @@ public sealed class Index : BaseIndex
 
 	public Bullet bulletPrefab;
 	public Image bulletIconPrefab;
+	public Slot slotPrefab;
 }

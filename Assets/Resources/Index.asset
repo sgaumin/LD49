@@ -16,3 +16,5 @@ MonoBehaviour:
     type: 3}
   bulletIconPrefab: {fileID: 8788908943719074099, guid: 6a2cd03d03c98d94494f08b9cb04f113,
     type: 3}
+  slotPrefab: {fileID: 4050659100452271991, guid: 6fa4aad74e9adba4798c4697b199ff9e,
+    type: 3}

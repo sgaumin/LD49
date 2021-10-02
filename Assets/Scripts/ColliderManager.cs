@@ -20,8 +20,6 @@ public class ColliderManager : MonoBehaviour
 
 		GameController.OnBuildingPhase += ActivateDeathZone;
 
-		GameController.OnTransitionPhase += DeactivateDeathZone;
-
 		GameController.OnShootingPhase += ActivateShootingLimits;
 	}
 
