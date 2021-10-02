@@ -16,8 +16,8 @@ public class SlotDetector : MonoBehaviour
 		var bullet = collision.GetComponent<Bullet>();
 		if (bullet != null && GameController.LevelState == LevelState.Shooting)
 		{
-			bullet.Kill();
 			parent.IsComplete = true;
+			bullet.Kill();
 			GameController.GenerateImpulse();
 		}
 	}

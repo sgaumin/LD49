@@ -3,5 +3,6 @@
 	Preparation,
 	Building,
 	Transition,
-	Shooting
+	Shooting,
+	End
 }

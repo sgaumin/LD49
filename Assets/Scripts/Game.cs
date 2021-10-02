@@ -7,6 +7,7 @@ using Tools.Utils;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Rendering.PostProcessing;
+using static Facade;
 
 public class Game : GameSystem
 {
@@ -25,6 +26,7 @@ public class Game : GameSystem
 	public event GameEventHandler OnBuildingPhase;
 	public event GameEventHandler OnTransitionPhase;
 	public event GameEventHandler OnShootingPhase;
+	public event GameEventHandler OnEndPhase;
 
 	public static Game Instance { get; private set; }
 
@@ -106,6 +108,9 @@ public class Game : GameSystem
 				case LevelState.Shooting:
 					OnShootingPhase?.Invoke();
 					break;
+				case LevelState.End:
+					OnEndPhase?.Invoke();
+					break;
 			}
 		}
 	}
@@ -168,6 +173,10 @@ public class Game : GameSystem
 		{
 			ReloadLevel();
 		}
+		if (LevelState == LevelState.End && Input.GetButtonDown("Action"))
+		{
+			ReloadLevel();
+		}
 	}
 
 	public void ResetPlayer()
@@ -199,11 +208,30 @@ public class Game : GameSystem
 		inversingColor = StartCoroutine(InversingColor(duration));
 	}
 
+	public void EndLevel()
+	{
+		LevelState = LevelState.End;
+	}
+
 	public void SetZoom(float value, float duration, Ease ease)
 	{
 		zooming?.Kill();
+
+		currentCamera.LookAt = Player.transform;
 		currentCamera.m_Lens.OrthographicSize = startOrthographicSize;
-		zooming = DOTween.To(() => currentCamera.m_Lens.OrthographicSize, x => currentCamera.m_Lens.OrthographicSize = x, value, duration).SetEase(ease).SetLoops(2, LoopType.Yoyo);
+
+		DOTween.To(() => currentCamera.m_Lens.OrthographicSize, x => currentCamera.m_Lens.OrthographicSize = x, value, duration * 0.1f).SetEase(ease).OnComplete(() => ZoomComeback(duration, ease)).SetUpdate(true);
+	}
+
+	private void ZoomComeback(float duration, Ease ease)
+	{
+		DOTween.To(() => currentCamera.m_Lens.OrthographicSize, x => currentCamera.m_Lens.OrthographicSize = x, startOrthographicSize, duration).SetEase(ease).OnComplete(() => ResetCamera()).SetUpdate(true);
+	}
+
+	private void ResetCamera()
+	{
+		currentCamera.LookAt = null;
+		currentCamera.transform.DORotate(Vector3.zero, 0.5f);
 	}
 
 	public void SetVignette(float value, float duration, Ease ease)

@@ -20,7 +20,11 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	[Header("Movements")]
 	[SerializeField] private float moveSpeed = 10f;
 	[SerializeField] private float jumpForce = 50f;
+	[SerializeField] private float pushingGravityModifier = 1.2f;
+	[SerializeField] private float releaseGravityModifier = 0.5f;
+	[SerializeField] private float releaseGravityDuration = 0.5f;
 	[Space]
+	[SerializeField] private float resetPushingDuration = 0.2f;
 	[SerializeField] private float checkGroundTiming = 0.05f;
 
 	[Header("Shooting")]
@@ -32,7 +36,8 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	[SerializeField] private LayerMask goundLayer;
 	[SerializeField] private Transform[] groundChecks;
 
-	private Rigidbody2D body => _body.Resolve(this);
+	public Rigidbody2D Body => _body.Resolve(this);
+	public int BulletUsed { get; set; }
 
 	private Vector2 move;
 	private bool isPushingGround;
@@ -40,7 +45,11 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	private bool canCheckGround;
 	private bool canShoot;
 	private Coroutine shootingCore;
+	private Coroutine timerForEndCore;
+	private Coroutine releasingGravityCore;
 	private int bulletCount;
+	private float startGravity;
+	private bool canPush;
 
 	private void Awake()
 	{
@@ -55,20 +64,28 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 		GameController.OnShootingPhase += ActiveBody;
 		GameController.OnShootingPhase += ConfigureShooting;
+
+		GameController.OnEndPhase += StopTimerForEnd;
 	}
 
 	private void Start()
 	{
 		canCheckGround = true;
+		canPush = true;
+		startGravity = Body.gravityScale;
 	}
 
 	private void Update()
 	{
 		if (Input.GetButtonDown("Action"))
 		{
-			if (GameController.LevelState == LevelState.Building)
+			if (GameController.LevelState == LevelState.Building && !isPushingGround && canPush)
 			{
+				StartCoroutine(ResetPushing());
+
 				isPushingGround = true;
+				StopReleaseGravity();
+				Body.gravityScale *= pushingGravityModifier;
 			}
 			else if (GameController.LevelState == LevelState.Shooting && canShoot && bulletCount < GameController.BulletCount)
 			{
@@ -84,8 +101,11 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	private void FixedUpdate()
 	{
 		// Inputs
-		move.x = Input.GetAxisRaw("Horizontal");
-		body.AddForce(move.normalized * moveSpeed);
+		if (GameController.LevelState != LevelState.End)
+		{
+			move.x = Input.GetAxisRaw("Horizontal");
+			Body.AddForce(move.normalized * moveSpeed);
+		}
 
 		if (GameController.LevelState == LevelState.Building)
 		{
@@ -109,6 +129,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 						if (isPushingGround)
 						{
 							isPushingGround = false;
+							ReleaseGravity();
 							colliders[i].GetComponent<BasicPlatform>().Push(transform.position);
 						}
 
@@ -122,21 +143,47 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		}
 	}
 
+	private void ReleaseGravity()
+	{
+		if (releasingGravityCore != null)
+		{
+			StopCoroutine(releasingGravityCore);
+		}
+		releasingGravityCore = StartCoroutine(ReleaseGravityCore());
+	}
+
+	private void StopReleaseGravity()
+	{
+		if (releasingGravityCore != null)
+		{
+			StopCoroutine(releasingGravityCore);
+		}
+		Body.gravityScale = startGravity;
+	}
+
+	private IEnumerator ReleaseGravityCore()
+	{
+		Body.gravityScale = startGravity;
+		Body.gravityScale *= releaseGravityModifier;
+		yield return new WaitForSeconds(releaseGravityDuration);
+		Body.gravityScale = startGravity;
+	}
+
 	private void DeactivateBody()
 	{
-		body.bodyType = RigidbodyType2D.Kinematic;
-		body.velocity = Vector2.zero;
+		Body.bodyType = RigidbodyType2D.Kinematic;
+		Body.velocity = Vector2.zero;
 	}
 
 	private void ActiveBody()
 	{
-		body.bodyType = RigidbodyType2D.Dynamic;
+		Body.bodyType = RigidbodyType2D.Dynamic;
 	}
 
 	private void ConfigureShooting()
 	{
 		bulletCount = 0;
-		body.gravityScale = 0f;
+		Body.gravityScale = 0f;
 		canShoot = true;
 	}
 
@@ -147,9 +194,16 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		canCheckGround = true;
 	}
 
+	private IEnumerator ResetPushing()
+	{
+		canPush = false;
+		yield return new WaitForSeconds(resetPushingDuration);
+		canPush = true;
+	}
+
 	private void OnLanding()
 	{
-		body.AddForce(Vector2.up * jumpForce);
+		Body.AddForce(Vector2.up * jumpForce);
 	}
 
 	public void Kill()
@@ -166,7 +220,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	{
 		GameController.GenerateImpulse();
 		yield return new WaitForSeconds(1f);
-		transform.DOMove(GameController.Spawn.position, 1f).SetEase(Ease.OutSine);
+		transform.DOMove(GameController.Spawn.position, 1f).SetEase(Ease.InOutSine);
 		yield return new WaitForSeconds(1f);
 		GameController.LevelState = LevelState.Shooting;
 	}
@@ -177,11 +231,45 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 		OnShoot?.Invoke();
 
+		GameController.GenerateImpulse();
+
 		var bullet = Instantiate(Prefabs.bulletPrefab);
 		bullet.transform.position = bulletSpawn.transform.position;
 		bulletCount++;
 
+		if (bulletCount >= GameController.BulletCount)
+			StartTimerForEnd();
+
 		yield return new WaitForSeconds(shootingReload);
 		canShoot = true;
+	}
+
+	private void StartTimerForEnd()
+	{
+		timerForEndCore = StartCoroutine(StartTimerForEndCore());
+	}
+
+	private void StopTimerForEnd()
+	{
+		if (timerForEndCore != null)
+		{
+			StopCoroutine(timerForEndCore);
+		}
+	}
+
+	private IEnumerator StartTimerForEndCore()
+	{
+		yield return new WaitForSeconds(5f);
+		FindObjectsOfType<Bullet>().ForEach(x => x.Kill());
+		GameController.EndLevel();
+	}
+
+	public void CheckAllBulletUsed()
+	{
+		BulletUsed++;
+		if (GameController.BulletCount <= BulletUsed)
+		{
+			GameController.EndLevel();
+		}
 	}
 }

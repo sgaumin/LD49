@@ -24,8 +24,11 @@ public class Slot : MonoBehaviour
 			isComplete = value;
 			if (isComplete)
 			{
+				unactiveForm.SetActive(false);
 				activeForm.SetActive(false);
 				completeForm.SetActive(true);
+
+				Slots.CheckAllComplete();
 			}
 		}
 	}

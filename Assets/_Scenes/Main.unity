@@ -489,6 +489,7 @@ MonoBehaviour:
   movementEase: 4
   pivot: {fileID: 1825226701}
   join: {fileID: 1518243091}
+  breakingForce: 0
 --- !u!4 &174616925
 Transform:
   m_ObjectHideFlags: 0
@@ -952,10 +953,10 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
   m_Points:
-  - {x: 6.9940886, y: 4.4758606}
-  - {x: 7.0130963, y: -4.6312156}
-  - {x: -7.022716, y: -4.618885}
-  - {x: -7.007141, y: 4.5286636}
+  - {x: 7.1614017, y: 13.978533}
+  - {x: 7.22666, y: -4.9159665}
+  - {x: -7.2125506, y: -4.927365}
+  - {x: -7.220704, y: 13.848751}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: -6.95, y: 0}
   m_UseAdjacentStartPoint: 0
@@ -2014,6 +2015,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 300
   jumpForce: 8000
+  pushingGravityModifier: 3
+  releaseGravityModifier: 0.35
+  releaseGravityDuration: 0.55
+  resetPushingDuration: 0.4
   checkGroundTiming: 0.2
   shootingReload: 0.2
   bulletSpawn: {fileID: 1086315511}
@@ -2093,10 +2098,35 @@ PrefabInstance:
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
       objectReference: {fileID: 0}
+    - target: {fileID: 2193284842810304318, guid: 91f77c7f45a95cc40a928615b549a427,
+        type: 3}
+      propertyPath: m_LookAt
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3240564644996932466, guid: 91f77c7f45a95cc40a928615b549a427,
         type: 3}
       propertyPath: m_LocalPosition.z
       value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3240564644996932466, guid: 91f77c7f45a95cc40a928615b549a427,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3240564644996932466, guid: 91f77c7f45a95cc40a928615b549a427,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3240564644996932466, guid: 91f77c7f45a95cc40a928615b549a427,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3240564644996932466, guid: 91f77c7f45a95cc40a928615b549a427,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3551343010801642665, guid: 91f77c7f45a95cc40a928615b549a427,
         type: 3}
@@ -2107,6 +2137,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Game Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447629935038498575, guid: 91f77c7f45a95cc40a928615b549a427,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447629935038498575, guid: 91f77c7f45a95cc40a928615b549a427,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447629935038498575, guid: 91f77c7f45a95cc40a928615b549a427,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447629935038498575, guid: 91f77c7f45a95cc40a928615b549a427,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7246981277467468507, guid: 91f77c7f45a95cc40a928615b549a427,
+        type: 3}
+      propertyPath: timer
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7246981277467468507, guid: 91f77c7f45a95cc40a928615b549a427,
         type: 3}

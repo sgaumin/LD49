@@ -9,10 +9,13 @@ using static Facade;
 
 public class SlotsManager : MonoBehaviour
 {
+	public static SlotsManager Instance { get; private set; }
+
 	private List<Slot> slots = new List<Slot>();
 
 	private void Awake()
 	{
+		Instance = this;
 		GameController.OnPreparationPhase += Setup;
 	}
 
@@ -35,6 +38,14 @@ public class SlotsManager : MonoBehaviour
 			slot.transform.DOLocalMoveY(0f, 0.2f).SetEase(Ease.OutBack);
 
 			yield return new WaitForSeconds(0.2f);
+		}
+	}
+
+	public void CheckAllComplete()
+	{
+		if (GameController.LevelState == LevelState.Shooting && slots.All(x => x.IsComplete))
+		{
+			GameController.EndLevel();
 		}
 	}
 }

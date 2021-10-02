@@ -17,6 +17,8 @@ public class Bullet : MonoBehaviour, ICanTakeDamage
 		body.bodyType = RigidbodyType2D.Kinematic;
 		body.velocity = Vector2.zero;
 		transform.DOMove(transform.position, 0.2f);
-		transform.DOScale(0f, 0.2f);
+		transform.DOScale(0f, 0.2f).OnComplete(() => Destroy(gameObject));
+
+		Player.CheckAllBulletUsed();
 	}
 }
