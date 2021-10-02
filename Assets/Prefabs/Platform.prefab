@@ -72,7 +72,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 267315281
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: afbb2bf420d32e9418b952e7e59c93a7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -127,10 +127,13 @@ MonoBehaviour:
   activeMovementX: 1
   movementXDuration: 1
   movementXValue: 1
+  movementXReverse: 0
   activeMovementY: 0
   movementYDuration: 1
   movementYValue: 1
+  movementYReverse: 0
   movementEase: 4
+  body: {fileID: 1510265728753550290}
   pivot: {fileID: 1510265729964231311}
 --- !u!1 &1510265729964231309
 GameObject:
@@ -201,7 +204,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 267315281
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 523b3e3b41ea3f243b75a6916f77eeeb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

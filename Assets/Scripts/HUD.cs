@@ -223,7 +223,7 @@ public class HUD : MonoBehaviour
 			b.transform.DOMove(endScore.transform.position, 0.35f).SetEase(Ease.OutSine).OnComplete(() =>
 			{
 				Destroy(b);
-				GameController.SetChromaticAberation(1f, 0.1f, Ease.OutSine);
+				GameController.SetChromaticAberation(0.8f, 0.1f, Ease.OutSine);
 				endScore.text = $"{++i}/{ Slots.Slots.Count()}";
 			});
 			yield return new WaitForSeconds(0.6f);

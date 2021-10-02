@@ -43,6 +43,12 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	[SerializeField] private float stretchingPushingDuration = 1f;
 	[SerializeField] private Ease stretchingPushingEase = Ease.OutCubic;
 
+	[Header("Sprite Animations")]
+	[SerializeField] private Sprite normal;
+	[SerializeField] private Sprite holdingBullet;
+	[Space]
+	[SerializeField] private SpriteRenderer spriteRenderer;
+
 	[Header("Shooting")]
 	[SerializeField] private float shootingReload = 0.2f;
 	[SerializeField] private Transform bulletSpawn;
@@ -80,8 +86,10 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		GameController.OnTransitionPhase += StartTransition;
 
 		GameController.OnShootingPhase += ActiveBody;
+		GameController.OnShootingPhase += ShowHoldingBullet;
 		GameController.OnShootingPhase += ConfigureShooting;
 
+		GameController.OnEndPhase += ShowNormalBody;
 		GameController.OnEndPhase += StopTimerForEnd;
 	}
 
@@ -112,6 +120,16 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 		transform.DOScaleX(stretchingPushingXFactor * startLocalScale.x, stretchingPushingDuration).SetEase(stretchingPushingEase);
 		transform.DOScaleY(stretchingPushingYFactor * startLocalScale.y, stretchingPushingDuration).SetEase(stretchingPushingEase);
+	}
+
+	private void ShowNormalBody()
+	{
+		spriteRenderer.sprite = normal;
+	}
+
+	private void ShowHoldingBullet()
+	{
+		spriteRenderer.sprite = holdingBullet;
 	}
 
 	private void Update()
@@ -251,7 +269,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		canPush = true;
 	}
 
-	private void OnLanding()
+	public void OnLanding()
 	{
 		Freeze();
 		SetBreathingAnimation();
@@ -293,7 +311,12 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		if (bulletCount >= GameController.BulletCount)
 			StartTimerForEnd();
 
+		ShowNormalBody();
 		yield return new WaitForSeconds(shootingReload);
+
+		if (bulletCount < GameController.BulletCount)
+			ShowHoldingBullet();
+
 		canShoot = true;
 	}
 

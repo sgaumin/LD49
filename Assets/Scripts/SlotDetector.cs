@@ -20,7 +20,7 @@ public class SlotDetector : MonoBehaviour
 			bullet.Kill();
 
 			GameController.GenerateImpulse();
-			GameController.SetChromaticAberation(1f, 0.1f, Ease.OutSine);
+			GameController.SetChromaticAberation(0.8f, 0.1f, Ease.OutSine);
 		}
 	}
 }

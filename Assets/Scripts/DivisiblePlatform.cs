@@ -27,17 +27,13 @@ public class DivisiblePlatform : Platform
 			platforms.ForEach(x => x.transform.SetParent(transform.parent));
 			platforms.ForEach(x => x.Init());
 
-			Destroy(join);
-			Destroy(gameObject);
+			GameController.GenerateImpulse();
+			GameController.SetChromaticAberation(0.8f, 0.125f, Ease.OutSine);
 
 			Player.Body.AddForce(breakingForce * Vector2.up);
 
-			GameController.SetZoom(2f, 1.5f, Ease.OutSine);
-
-			Time.timeScale = 0.0001f;
-			DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1, 2f).SetEase(Ease.OutSine).SetUpdate(true);
-			Time.fixedDeltaTime = 0.0001f;
-			DOTween.To(() => Time.fixedDeltaTime, x => Time.fixedDeltaTime = x, 0.02f, 2f).SetEase(Ease.OutSine).SetUpdate(true); ;
+			Destroy(join);
+			Destroy(gameObject);
 		}
 		else
 		{

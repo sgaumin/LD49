@@ -28,6 +28,7 @@ public abstract class Platform : MonoBehaviour
 	[SerializeField] protected Ease movementEase = Ease.InOutSine;
 
 	[Header("References")]
+	[SerializeField] protected SpriteRenderer body;
 	[SerializeField] protected SpriteRenderer pivot;
 
 	private bool hasBeenInitialized;
@@ -39,7 +40,6 @@ public abstract class Platform : MonoBehaviour
 
 	protected virtual void OnStart()
 	{
-		HidePivot();
 		if (initAtStart)
 			Init();
 	}
@@ -48,7 +48,7 @@ public abstract class Platform : MonoBehaviour
 	{
 		hasBeenInitialized = true;
 		CheckMovements();
-		ShowPivot();
+		Show();
 	}
 
 	public void CheckMovements()
@@ -60,22 +60,19 @@ public abstract class Platform : MonoBehaviour
 			transform.DOLocalMoveY(movementYValue * (movementYReverse ? -1 : 1), movementYDuration).SetRelative().SetEase(movementEase).SetLoops(-1, LoopType.Yoyo);
 	}
 
-	public void ShowPivot()
+	public void Show()
 	{
-		if (pivot == null)
-			return;
+		if (body != null)
+		{
+			body.enabled = true;
+			body.color = body.color.WithAlpha(0f);
+			body.DOKill();
+			body.DOColor(body.color.WithAlpha(1f), 0.2f).SetEase(Ease.OutSine);
+		}
 
 		pivot.color = pivot.color.WithAlpha(0f);
 		pivot.DOKill();
 		pivot.DOColor(pivot.color.WithAlpha(1f), 0.2f).SetEase(Ease.OutSine);
-	}
-
-	public void HidePivot()
-	{
-		if (pivot == null)
-			return;
-
-		pivot.color = pivot.color.WithAlpha(0f);
 	}
 
 	public virtual void Push(Vector2 forcePosition)

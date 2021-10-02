@@ -244,16 +244,7 @@ public class Game : GameSystem
 	public void SetZoom(float value, float duration, Ease ease)
 	{
 		zooming?.Kill();
-
-		currentCamera.LookAt = Player.transform;
-		currentCamera.m_Lens.OrthographicSize = startOrthographicSize;
-
-		DOTween.To(() => currentCamera.m_Lens.OrthographicSize, x => currentCamera.m_Lens.OrthographicSize = x, value, duration * 0.1f).SetEase(ease).OnComplete(() => ZoomComeback(duration, ease)).SetUpdate(true);
-	}
-
-	private void ZoomComeback(float duration, Ease ease)
-	{
-		DOTween.To(() => currentCamera.m_Lens.OrthographicSize, x => currentCamera.m_Lens.OrthographicSize = x, startOrthographicSize, duration).SetEase(ease).OnComplete(() => ResetCamera()).SetUpdate(true);
+		DOTween.To(() => currentCamera.m_Lens.OrthographicSize, x => currentCamera.m_Lens.OrthographicSize = x, value, duration).SetLoops(2, LoopType.Yoyo).SetEase(ease).SetUpdate(true);
 	}
 
 	private void ResetCamera()
