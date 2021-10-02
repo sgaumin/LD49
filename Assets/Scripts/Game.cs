@@ -239,7 +239,6 @@ public class Game : GameSystem
 		}
 
 		Player.transform.DOMove(Spawn.position, 1f).SetEase(Ease.OutCirc);
-
 	}
 
 	public void SetZoom(float value, float duration, Ease ease)

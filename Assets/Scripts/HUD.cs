@@ -220,9 +220,13 @@ public class HUD : MonoBehaviour
 			var b = Instantiate(Prefabs.bulletPrefab);
 			b.Body.bodyType = RigidbodyType2D.Kinematic;
 			b.transform.position = slot.transform.position;
-			b.transform.DOMove(endScore.transform.position, 0.35f).SetEase(Ease.OutSine).OnComplete(() => { Destroy(b); GameController.SetChromaticAberation(1f, 0.1f, Ease.OutSine); });
+			b.transform.DOMove(endScore.transform.position, 0.35f).SetEase(Ease.OutSine).OnComplete(() =>
+			{
+				Destroy(b);
+				GameController.SetChromaticAberation(1f, 0.1f, Ease.OutSine);
+				endScore.text = $"{++i}/{ Slots.Slots.Count()}";
+			});
 			yield return new WaitForSeconds(0.6f);
-			endScore.text = $"{++i}/{ Slots.Slots.Count()}";
 		}
 
 		yield return new WaitForSeconds(1f);

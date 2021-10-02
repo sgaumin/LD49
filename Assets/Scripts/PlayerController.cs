@@ -213,6 +213,12 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		Body.gravityScale = startGravity;
 	}
 
+	private void Freeze()
+	{
+		Time.timeScale = 0f;
+		DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1, 0.125f).SetEase(Ease.OutSine).SetUpdate(true);
+	}
+
 	private void DeactivateBody()
 	{
 		Body.bodyType = RigidbodyType2D.Kinematic;
@@ -247,6 +253,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 	private void OnLanding()
 	{
+		Freeze();
 		SetBreathingAnimation();
 		ReleaseGravity();
 	}
