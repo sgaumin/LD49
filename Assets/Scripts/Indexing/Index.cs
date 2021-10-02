@@ -1,5 +1,6 @@
 using Tools;
 using UnityEngine;
+using UnityEngine.UI;
 
 // See Design Pattern example: https://www.notion.so/Index-8c49dc7f08e241238ca8b933268d2661
 
@@ -12,5 +13,6 @@ public sealed class Index : BaseIndex
 	// Set up your references below!
 	// You only need to assign references once with this pattern.
 
-	// public Cell cell;
+	public Bullet bulletPrefab;
+	public Image bulletIconPrefab;
 }

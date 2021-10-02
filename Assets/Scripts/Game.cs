@@ -15,14 +15,32 @@ public class Game : GameSystem
 
 	public delegate void GameEventHandler();
 
+	// Game States Events
 	public event GameEventHandler OnStart;
 	public event GameEventHandler OnGameOver;
 	public event GameEventHandler OnPause;
 
+	// Level States Events
+	public event GameEventHandler OnPreparationPhase;
+	public event GameEventHandler OnBuildingPhase;
+	public event GameEventHandler OnTransitionPhase;
+	public event GameEventHandler OnShootingPhase;
+
 	public static Game Instance { get; private set; }
+
+	[Header("Level Parameters")]
+	[SerializeField] private int timer = 10;
+	[SerializeField] private int bulletCount = 4;
 
 	[Header("Audio")]
 	[SerializeField] private AudioExpress gameMusic;
+
+	[Header("Player")]
+	[SerializeField] private PlayerController player;
+	[SerializeField] private Transform spawnPlayer;
+
+	[Header("Animations")]
+	[SerializeField] private float fadDuration = 0.2f;
 
 	[Header("References")]
 	[SerializeField] private Dependency<FadScreen> _fader;
@@ -33,6 +51,7 @@ public class Game : GameSystem
 	[SerializeField] private Material transition;
 
 	private GameState gameState;
+	private LevelState levelState;
 	private Coroutine loadingLevel;
 	private float gameMusicVolume;
 	private Coroutine inversingColor;
@@ -51,7 +70,6 @@ public class Game : GameSystem
 		set
 		{
 			gameState = value;
-
 			switch (value)
 			{
 				case GameState.Play:
@@ -68,6 +86,34 @@ public class Game : GameSystem
 			}
 		}
 	}
+	public LevelState LevelState
+	{
+		get => levelState;
+		set
+		{
+			levelState = value;
+			switch (value)
+			{
+				case LevelState.Preparation:
+					OnPreparationPhase?.Invoke();
+					break;
+				case LevelState.Building:
+					OnBuildingPhase?.Invoke();
+					break;
+				case LevelState.Transition:
+					OnTransitionPhase?.Invoke();
+					break;
+				case LevelState.Shooting:
+					OnShootingPhase?.Invoke();
+					break;
+			}
+		}
+	}
+	public int Timer => timer;
+	public int BulletCount => bulletCount;
+	public Transform Spawn => spawnPlayer;
+
+	// Private Properties
 	private FadScreen fader => _fader.Resolve(this);
 	private CinemachineImpulseSource impulse => _impulse.Resolve(this);
 	private CinemachineVirtualCamera currentCamera => _camera.Resolve(this);
@@ -98,15 +144,43 @@ public class Game : GameSystem
 		mixer.GetFloat(GAME_MUSIC_VOLUME, out gameMusicVolume);
 		startOrthographicSize = currentCamera.m_Lens.OrthographicSize;
 
-		fader.FadIn();
+		fader.FadIn(fadDuration: fadDuration);
 		gameMusic.Play();
 
+		ResetPlayer();
+
 		GameState = GameState.Play;
+		LevelState = LevelState.Preparation;
 	}
 
 	protected override void Update()
 	{
 		base.Update();
+	}
+
+	private void LateUpdate()
+	{
+		if (LevelState == LevelState.Preparation && Input.GetButtonDown("Action"))
+		{
+			LevelState = LevelState.Building;
+		}
+		if (Input.GetKeyDown(KeyCode.R))
+		{
+			ReloadLevel();
+		}
+	}
+
+	public void ResetPlayer()
+	{
+		player.transform.position = spawnPlayer.position;
+	}
+
+	public void StartShootingPhase()
+	{
+		if (LevelState == LevelState.Building)
+		{
+			LevelState = LevelState.Transition;
+		}
 	}
 
 	public void GenerateImpulse()
@@ -257,7 +331,7 @@ public class Game : GameSystem
 		}
 		Time.timeScale = 1f;
 
-		yield return fader.FadOutCore();
+		yield return fader.FadOutCore(fadDuration: fadDuration);
 		content?.Invoke();
 	}
 }

@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Platform
   - 
   - 
   - 
@@ -40,6 +40,15 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Platform
+    uniqueID: 267315281
+    locked: 0
+  - name: Player
+    uniqueID: 3457122837
+    locked: 0
+  - name: HUD
+    uniqueID: 3255022373
     locked: 0
   - name: Fader
     uniqueID: 1476709903

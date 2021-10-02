@@ -12,4 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c95a299028f60b0458109ac2543b8d77, type: 3}
   m_Name: Index
   m_EditorClassIdentifier: 
-  coinPrefab: {fileID: 0}
+  bulletPrefab: {fileID: 6906390421058205812, guid: a91512c2370e21c43844de0682e8e09c,
+    type: 3}
+  bulletIconPrefab: {fileID: 8788908943719074099, guid: 6a2cd03d03c98d94494f08b9cb04f113,
+    type: 3}

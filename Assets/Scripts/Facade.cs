@@ -4,5 +4,6 @@
 	public static Game GameController => Game.Instance;
 	public static MusicPlayer GameMusic => MusicPlayer.Instance;
 	public static TextFontConfig FontConfig => TextFontConfig.Instance;
+	public static PlayerController Player => PlayerController.Instance;
 	public static Index Prefabs => Index.Instance;
 }
