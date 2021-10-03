@@ -33,6 +33,8 @@ public class Game : GameSystem
 
 	public static Game Instance { get; private set; }
 
+	[SerializeField] private bool cancelInput;
+
 	[Header("Level Parameters")]
 	[SerializeField] private string levelName;
 	[SerializeField] private int timer = 10;
@@ -178,6 +180,9 @@ public class Game : GameSystem
 
 	private void LateUpdate()
 	{
+		if (cancelInput)
+			return;
+
 		if (LevelState == LevelState.Preparation && Input.GetButtonDown("Action"))
 		{
 			GameState = GameState.Play;

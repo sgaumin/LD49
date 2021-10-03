@@ -367,10 +367,13 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 	public void CheckAllBulletUsed()
 	{
-		BulletUsed++;
-		if (GameController.BulletCount <= BulletUsed)
+		if (GameController.GameState != GameState.GameOver)
 		{
-			GameController.EndLevel();
+			BulletUsed++;
+			if (GameController.BulletCount <= BulletUsed)
+			{
+				GameController.EndLevel();
+			}
 		}
 	}
 }

@@ -1624,7 +1624,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 269440057204845372}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2, y: -2, z: 0}
+  m_LocalPosition: {x: 1.5, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1863472308596278775}
@@ -1724,7 +1724,7 @@ MonoBehaviour:
   canBeDestroyed: 0
   breakingForce: 500
   activeMovementX: 1
-  movementXDuration: 2.5
+  movementXDuration: 1.5
   movementXValue: 2
   movementXReverse: 0
   activeMovementY: 0
@@ -2496,7 +2496,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3968780210226021558}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2, y: -2, z: 0}
+  m_LocalPosition: {x: -1.5, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4375140886293147176}
@@ -2596,7 +2596,7 @@ MonoBehaviour:
   canBeDestroyed: 0
   breakingForce: 500
   activeMovementX: 1
-  movementXDuration: 2.5
+  movementXDuration: 1.5
   movementXValue: 2
   movementXReverse: 1
   activeMovementY: 0
@@ -2988,7 +2988,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5775115558327219662}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2536347781673731159}

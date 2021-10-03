@@ -26,7 +26,6 @@ public class DivisiblePlatform : Platform
 			platforms.ForEach(x => x.gameObject.SetActive(true));
 			platforms.ForEach(x => x.transform.SetParent(transform.parent));
 			platforms.ForEach(x => x.Init());
-			Destroy(join);
 
 			DestroyAfterImpact();
 		}
@@ -34,5 +33,22 @@ public class DivisiblePlatform : Platform
 		{
 			Push(forcePosition);
 		}
+	}
+
+	protected override void DestroyAfterImpact()
+	{
+		GameController.GenerateImpulse();
+		GameController.SetChromaticAberation(1f, 0.125f, Ease.OutSine);
+
+		StartCoroutine(ApplyForceCore());
+	}
+
+	private IEnumerator ApplyForceCore()
+	{
+		yield return new WaitForSeconds(0.03f);
+		Player.Body.AddForce(breakingForce * Vector2.up);
+		PlayDestruction();
+		Destroy(join);
+		Destroy(gameObject);
 	}
 }

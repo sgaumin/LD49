@@ -115,14 +115,18 @@ public abstract class Platform : MonoBehaviour
 		transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, targetAngle));
 	}
 
-	protected void DestroyAfterImpact()
+	protected virtual void DestroyAfterImpact()
 	{
 		GameController.GenerateImpulse();
 		GameController.SetChromaticAberation(0.8f, 0.125f, Ease.OutSine);
+		StartCoroutine(ApplyForceCore());
+	}
 
+	private IEnumerator ApplyForceCore()
+	{
+		yield return new WaitForSeconds(0.02f);
 		Player.Body.AddForce(breakingForce * Vector2.up);
 		PlayDestruction();
-
 		Destroy(gameObject);
 	}
 
