@@ -21,6 +21,8 @@ public class HUD : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI endReward;
 	[SerializeField] private TextMeshProUGUI phase;
 	[SerializeField] private CanvasGroup group;
+	[SerializeField] private CanvasGroup tutorialBuilding;
+	[SerializeField] private CanvasGroup tutorialShooting;
 
 	private int currentTimer;
 	private Coroutine timerCore;
@@ -32,15 +34,16 @@ public class HUD : MonoBehaviour
 	{
 		GameController.OnPreparationPhase += Setup;
 
-		GameController.OnBuildingPhase += StartTimer;
+		GameController.OnBuildingPhase += StartBuildingPhase;
 		GameController.OnBuildingPhase += StopSetupCore;
 		GameController.OnBuildingPhase += () => ShowPhaseName("UNSTABLE PHASE");
 
-		GameController.OnTransitionPhase += StopTimer;
+		GameController.OnTransitionPhase += StopBuildingPhase;
 		GameController.OnTransitionPhase += HidePhaseName;
 		GameController.OnTransitionPhase += SetupBulletIcons;
 
 		GameController.OnShootingPhase += () => ShowPhaseName("CONNECTION PHASE");
+		GameController.OnShootingPhase += StartShootingPhase;
 
 		GameController.OnEndPhase += End;
 		GameController.OnEndPhase += HidePhaseName;
@@ -57,6 +60,8 @@ public class HUD : MonoBehaviour
 		help.color = help.color.WithAlpha(0f);
 		end.color = end.color.WithAlpha(0f);
 		phase.color = end.color.WithAlpha(0f);
+		tutorialBuilding.alpha = 0f;
+		tutorialShooting.alpha = 0f;
 
 		// Timer
 		timer.color = timer.color.WithAlpha(0f);
@@ -105,13 +110,18 @@ public class HUD : MonoBehaviour
 		}
 	}
 
-	private void StartTimer()
+	private void StartBuildingPhase()
 	{
 		if (setupTimerCore != null)
 		{
 			StopCoroutine(setupTimerCore);
 		}
 		timerCore = StartCoroutine(StartTimerCore());
+
+		if (GameController.ShowTutorials)
+		{
+			DOTween.To(() => tutorialBuilding.alpha, x => tutorialBuilding.alpha = x, 1f, 0.2f).SetEase(Ease.OutCubic);
+		}
 	}
 
 	private IEnumerator StartTimerCore()
@@ -129,6 +139,14 @@ public class HUD : MonoBehaviour
 			currentTimer--;
 		}
 		GameController.StartShootingPhase();
+	}
+
+	private void StartShootingPhase()
+	{
+		if (GameController.ShowTutorials)
+		{
+			DOTween.To(() => tutorialShooting.alpha, x => tutorialShooting.alpha = x, 1f, 0.2f).SetEase(Ease.OutCubic);
+		}
 	}
 
 	private void SetupBulletIcons()
@@ -176,9 +194,15 @@ public class HUD : MonoBehaviour
 		}
 	}
 
-	private void StopTimer()
+	private void StopBuildingPhase()
 	{
 		StartCoroutine(StopTimerCore());
+
+		if (GameController.ShowTutorials)
+		{
+			tutorialBuilding.DOKill();
+			DOTween.To(() => tutorialBuilding.alpha, x => tutorialBuilding.alpha = x, 0f, 0.2f).SetEase(Ease.OutCubic);
+		}
 	}
 
 	private IEnumerator StopTimerCore()
@@ -211,6 +235,12 @@ public class HUD : MonoBehaviour
 	private void End()
 	{
 		StartCoroutine(EndCore());
+
+		if (GameController.ShowTutorials)
+		{
+			tutorialShooting.DOKill();
+			DOTween.To(() => tutorialShooting.alpha, x => tutorialShooting.alpha = x, 0f, 0.2f).SetEase(Ease.OutCubic);
+		}
 	}
 
 	private IEnumerator EndCore()

@@ -39,6 +39,7 @@ public class Game : GameSystem
 	[SerializeField] private string levelName;
 	[SerializeField] private int timer = 10;
 	[SerializeField] private int bulletCount = 4;
+	[SerializeField] private bool showTutorials;
 
 	[Header("Audio")]
 	[SerializeField] private AudioExpress gameMusic;
@@ -130,6 +131,7 @@ public class Game : GameSystem
 	public int BulletCount => bulletCount;
 	public Transform Spawn => spawnPlayer;
 	public bool canListenEndInput { get; set; }
+	public bool ShowTutorials => showTutorials;
 
 	// Private Properties
 	private FadScreen fader => _fader.Resolve(this);

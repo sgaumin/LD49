@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 	public event PlayerEventHandler OnShoot;
 
+	[SerializeField] private bool isStatic;
+
 	[Header("Movements")]
 	[SerializeField] private float moveSpeed = 10f;
 	[SerializeField] private float jumpForce = 50f;
@@ -88,6 +90,9 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	{
 		Instance = this;
 
+		if (isStatic)
+			return;
+
 		GameController.OnPreparationPhase += DeactivateBody;
 
 		GameController.OnBuildingPhase += ActiveBody;
@@ -105,9 +110,12 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 	private void Start()
 	{
-		canCheckGround = true;
-		canPush = true;
-		startGravity = Body.gravityScale;
+		if (!isStatic)
+		{
+			canCheckGround = true;
+			canPush = true;
+			startGravity = Body.gravityScale;
+		}
 
 		// Breathing Animation
 		startLocalScale = transform.localScale;
@@ -144,6 +152,9 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 	private void Update()
 	{
+		if (isStatic)
+			return;
+
 		if (Input.GetButtonDown("Action"))
 		{
 			if (GameController.LevelState == LevelState.Building && !isPushingGround && canPush)
@@ -173,6 +184,9 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 	private void FixedUpdate()
 	{
+		if (isStatic)
+			return;
+
 		// Inputs
 		if (GameController.LevelState != LevelState.End)
 		{

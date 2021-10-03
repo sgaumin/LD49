@@ -157,6 +157,11 @@ PrefabInstance:
       propertyPath: bulletCount
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 7246981277467468507, guid: 91f77c7f45a95cc40a928615b549a427,
+        type: 3}
+      propertyPath: showTutorials
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 91f77c7f45a95cc40a928615b549a427, type: 3}
 --- !u!4 &7147863001693810877 stripped
