@@ -49,6 +49,14 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	[Space]
 	[SerializeField] private SpriteRenderer spriteRenderer;
 
+	[Header("Audio")]
+	[SerializeField] private AudioExpress shootingSound;
+	[SerializeField] private AudioExpress jumpingSound;
+	[SerializeField] private AudioExpress collectSound;
+	[SerializeField] private AudioExpress damageSound;
+	[SerializeField] private AudioExpress horizontalSound;
+	[SerializeField] private AudioExpress pushingSound;
+
 	[Header("Shooting")]
 	[SerializeField] private float shootingReload = 0.2f;
 	[SerializeField] private Transform bulletSpawn;
@@ -57,6 +65,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	[SerializeField] private Dependency<Rigidbody2D> _body;
 	[SerializeField] private LayerMask goundLayer;
 	[SerializeField] private Transform[] groundChecks;
+	[SerializeField] private Collider2D colliderTrigger2D;
 
 	public Rigidbody2D Body => _body.Resolve(this);
 	public int BulletUsed { get; set; }
@@ -73,6 +82,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	private float startGravity;
 	private bool canPush;
 	private Vector3 startLocalScale;
+	private AudioUnit horizontalAudioUnit;
 
 	private void Awake()
 	{
@@ -154,6 +164,11 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 				shootingCore = StartCoroutine(ShootingCore());
 			}
 		}
+
+		if (horizontalAudioUnit != null)
+		{
+			horizontalAudioUnit.volume = GameController.LevelState == LevelState.Shooting ? Mathf.Clamp01(Mathf.Abs(Body.velocity.x)) : 0f;
+		}
 	}
 
 	private void FixedUpdate()
@@ -186,6 +201,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 						OnLanding();
 						if (isPushingGround)
 						{
+							pushingSound.Play();
 							isPushingGround = false;
 							colliders[i].GetComponent<BasicPlatform>().Push(transform.position);
 						}
@@ -234,22 +250,25 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	private void Freeze()
 	{
 		Time.timeScale = 0f;
-		DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1, 0.125f).SetEase(Ease.OutSine).SetUpdate(true);
+		DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1, 0.1f).SetEase(Ease.OutSine).SetUpdate(true);
 	}
 
 	private void DeactivateBody()
 	{
 		Body.bodyType = RigidbodyType2D.Kinematic;
 		Body.velocity = Vector2.zero;
+		colliderTrigger2D.enabled = false;
 	}
 
 	private void ActiveBody()
 	{
 		Body.bodyType = RigidbodyType2D.Dynamic;
+		colliderTrigger2D.enabled = true;
 	}
 
 	private void ConfigureShooting()
 	{
+		horizontalAudioUnit = horizontalSound.Play();
 		bulletCount = 0;
 		Body.gravityScale = 0f;
 		canShoot = true;
@@ -271,6 +290,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 	public void OnLanding()
 	{
+		jumpingSound.Play();
 		Freeze();
 		SetBreathingAnimation();
 		ReleaseGravity();
@@ -278,6 +298,8 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 	public void Kill()
 	{
+		colliderTrigger2D.enabled = false;
+		damageSound.Play();
 		SetBreathingAnimation();
 		GameController.StartShootingPhase();
 	}
@@ -293,6 +315,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		yield return new WaitForSeconds(1f);
 		transform.DOMove(GameController.Spawn.position, 1f).SetEase(Ease.InOutSine);
 		yield return new WaitForSeconds(1f);
+		GameController.UpdateGameMusicLowPass(1f);
 		GameController.LevelState = LevelState.Shooting;
 	}
 
@@ -307,6 +330,8 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		var bullet = Instantiate(Prefabs.bulletPrefab);
 		bullet.transform.position = bulletSpawn.transform.position;
 		bulletCount++;
+
+		shootingSound.Play();
 
 		if (bulletCount >= GameController.BulletCount)
 			StartTimerForEnd();

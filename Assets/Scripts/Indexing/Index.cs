@@ -16,6 +16,7 @@ public sealed class Index : BaseIndex
 	public Bullet bulletPrefab;
 	public Image bulletIconPrefab;
 	public Slot slotPrefab;
+	public Reward rewardPrefab;
 
 	[Header("Effects")]
 	public ParticleSystem smallImpactEffect;

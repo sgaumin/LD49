@@ -10,6 +10,8 @@ using static Facade;
 public class Bullet : MonoBehaviour, ICanTakeDamage
 {
 	[SerializeField] private Dependency<Rigidbody2D> _body;
+	[SerializeField] private AudioExpress damageSound;
+
 	public Rigidbody2D Body => _body.Resolve(this);
 
 	public void Kill()
@@ -18,6 +20,7 @@ public class Bullet : MonoBehaviour, ICanTakeDamage
 		Body.velocity = Vector2.zero;
 		transform.DOMove(transform.position, 0.2f);
 		transform.DOScale(0f, 0.2f).OnComplete(() => Destroy(gameObject));
+		damageSound.Play();
 
 		Player.CheckAllBulletUsed();
 	}

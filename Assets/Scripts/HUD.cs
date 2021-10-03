@@ -18,6 +18,8 @@ public class HUD : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI help;
 	[SerializeField] private TextMeshProUGUI end;
 	[SerializeField] private TextMeshProUGUI endScore;
+	[SerializeField] private TextMeshProUGUI endReward;
+	[SerializeField] private TextMeshProUGUI phase;
 	[SerializeField] private CanvasGroup group;
 
 	private int currentTimer;
@@ -32,11 +34,16 @@ public class HUD : MonoBehaviour
 
 		GameController.OnBuildingPhase += StartTimer;
 		GameController.OnBuildingPhase += StopSetupCore;
+		GameController.OnBuildingPhase += () => ShowPhaseName("UNSTABLE PHASE");
 
 		GameController.OnTransitionPhase += StopTimer;
+		GameController.OnTransitionPhase += HidePhaseName;
 		GameController.OnTransitionPhase += SetupBulletIcons;
 
+		GameController.OnShootingPhase += () => ShowPhaseName("CONNECTION PHASE");
+
 		GameController.OnEndPhase += End;
+		GameController.OnEndPhase += HidePhaseName;
 		GameController.OnEndPhase += StartRemoveAllIcon;
 
 		Player.OnShoot += RemoveShootIcon;
@@ -49,6 +56,7 @@ public class HUD : MonoBehaviour
 		title.color = title.color.WithAlpha(0f);
 		help.color = help.color.WithAlpha(0f);
 		end.color = end.color.WithAlpha(0f);
+		phase.color = end.color.WithAlpha(0f);
 
 		// Timer
 		timer.color = timer.color.WithAlpha(0f);
@@ -62,11 +70,11 @@ public class HUD : MonoBehaviour
 
 	private IEnumerator SetupCore()
 	{
-		yield return new WaitForSeconds(2f);
+		yield return new WaitForSeconds(1f);
 		title.DOFade(1f, 1f).SetEase(Ease.OutSine);
 
-		yield return new WaitForSeconds(4f);
-		help.DOFade(1f, 0.75f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+		yield return new WaitForSeconds(2f);
+		help.DOFade(1f, 0.4f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
 	}
 
 	private void StopSetupCore()
@@ -207,7 +215,8 @@ public class HUD : MonoBehaviour
 
 	private IEnumerator EndCore()
 	{
-		endScore.text = $"0/{ Slots.Slots.Count()}";
+		endScore.text = $"COMPLETION\n0/{ Slots.Slots.Count()}";
+		endReward.text = $"BONUS\n{Rewards.Rewards.Where(x => x.isCollected).Count()}/{ Rewards.Rewards.Count()}";
 
 		yield return new WaitForSeconds(1f);
 		DOTween.To(() => group.alpha, x => group.alpha = x, 1, 0.2f).SetEase(Ease.OutCubic);
@@ -222,14 +231,41 @@ public class HUD : MonoBehaviour
 			b.transform.position = slot.transform.position;
 			b.transform.DOMove(endScore.transform.position, 0.35f).SetEase(Ease.OutSine).OnComplete(() =>
 			{
-				Destroy(b);
+				Destroy(b.gameObject);
 				GameController.SetChromaticAberation(0.8f, 0.1f, Ease.OutSine);
-				endScore.text = $"{++i}/{ Slots.Slots.Count()}";
+				endScore.text = $"COMPLETION\n{++i}/{ Slots.Slots.Count()}";
 			});
+			Slots.PlayCollectSound();
+
 			yield return new WaitForSeconds(0.6f);
 		}
 
 		yield return new WaitForSeconds(1f);
-		end.DOFade(1f, 0.75f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+
+		end.DOFade(1f, 0.4f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+
+		if (Slots.Slots.All(x => x.IsComplete))
+		{
+			end.text = "PRESS SPACE TO CONTINUE";
+		}
+		else
+		{
+			end.text = "PRESS SPACE TO RETRY";
+		}
+
+		GameController.canListenEndInput = true;
+	}
+
+	private void ShowPhaseName(string name)
+	{
+		phase.text = name;
+		phase?.DOKill();
+		phase.DOFade(1f, 0.2f);
+	}
+
+	private void HidePhaseName()
+	{
+		phase?.DOKill();
+		phase.DOFade(0f, 0.2f);
 	}
 }

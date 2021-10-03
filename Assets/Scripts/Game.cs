@@ -14,6 +14,7 @@ using static Facade;
 public class Game : GameSystem
 {
 	public const string GAME_MUSIC_VOLUME = "musicVolume";
+	public const string GAME_MUSIC_LOWPASS = "musicLowPass";
 	public const float MIN_MUSIC_VOLUME = -60f;
 
 	public delegate void GameEventHandler();
@@ -44,6 +45,10 @@ public class Game : GameSystem
 	[SerializeField] private PlayerController player;
 	[SerializeField] private Transform spawnPlayer;
 
+	[Header("Audio")]
+	[SerializeField] private AudioExpress bipSound;
+	[SerializeField] private AudioExpress changingPhaseSound;
+
 	[Header("Animations")]
 	[SerializeField] private float fadDuration = 0.2f;
 
@@ -59,6 +64,7 @@ public class Game : GameSystem
 	private LevelState levelState;
 	private Coroutine loadingLevel;
 	private float gameMusicVolume;
+	private float gameMusicLowPass;
 	private Coroutine inversingColor;
 	private float startOrthographicSize;
 	private FloatParameter startVignetteIntensity;
@@ -121,6 +127,7 @@ public class Game : GameSystem
 	public string LevelName => levelName;
 	public int BulletCount => bulletCount;
 	public Transform Spawn => spawnPlayer;
+	public bool canListenEndInput { get; set; }
 
 	// Private Properties
 	private FadScreen fader => _fader.Resolve(this);
@@ -151,6 +158,7 @@ public class Game : GameSystem
 		}
 
 		mixer.GetFloat(GAME_MUSIC_VOLUME, out gameMusicVolume);
+		mixer.GetFloat(GAME_MUSIC_LOWPASS, out gameMusicLowPass);
 		startOrthographicSize = currentCamera.m_Lens.OrthographicSize;
 
 		fader.FadIn(fadDuration: fadDuration);
@@ -158,7 +166,8 @@ public class Game : GameSystem
 
 		ResetPlayer();
 
-		GameState = GameState.Play;
+		UpdateGameMusicLowPass(0f);
+		GameState = GameState.Pause;
 		LevelState = LevelState.Preparation;
 	}
 
@@ -171,16 +180,29 @@ public class Game : GameSystem
 	{
 		if (LevelState == LevelState.Preparation && Input.GetButtonDown("Action"))
 		{
+			GameState = GameState.Play;
 			LevelState = LevelState.Building;
+
+			PlayBipSound();
+			UpdateGameMusicLowPass(1f);
 			ChangePhase();
 		}
-		if (Input.GetKeyDown(KeyCode.R))
+		if (gameState == GameState.Play && Input.GetKeyDown(KeyCode.R))
 		{
 			ReloadLevel();
+			PlayBipSound();
 		}
-		if (LevelState == LevelState.End && Input.GetButtonDown("Action"))
+		if (canListenEndInput && LevelState == LevelState.End && Input.GetButtonDown("Action"))
 		{
-			ReloadLevel();
+			PlayBipSound();
+			if (Slots.Slots.All(x => x.IsComplete))
+			{
+				LoadNextLevel();
+			}
+			else
+			{
+				ReloadLevel();
+			}
 		}
 	}
 
@@ -191,15 +213,22 @@ public class Game : GameSystem
 
 	private void ChangePhase()
 	{
+		changingPhaseSound.Play();
 		InverseColor(0.1f);
 		GenerateImpulse();
 		Player.SetBreathingAnimation();
+	}
+
+	public void PlayBipSound()
+	{
+		bipSound.Play();
 	}
 
 	public void StartShootingPhase()
 	{
 		if (LevelState == LevelState.Building)
 		{
+			UpdateGameMusicLowPass(0f);
 			LevelState = LevelState.Transition;
 			ChangePhase();
 		}
@@ -223,7 +252,11 @@ public class Game : GameSystem
 
 	public void EndLevel()
 	{
+		gameState = GameState.GameOver;
+
 		LevelState = LevelState.End;
+		UpdateGameMusicLowPass(0f);
+
 		ChangePhase();
 
 		StartCoroutine(EndLevelCore());
@@ -235,7 +268,7 @@ public class Game : GameSystem
 		foreach (var platform in platforms)
 		{
 			platform.Disapear();
-			yield return new WaitForSeconds(0.35f);
+			yield return new WaitForSeconds(0.3f);
 		}
 
 		Player.transform.DOMove(Spawn.position, 1f).SetEase(Ease.OutCirc);
@@ -290,6 +323,12 @@ public class Game : GameSystem
 	{
 		gameMusicVolume = Mathf.Lerp(MIN_MUSIC_VOLUME, 0f, percentage);
 		mixer.SetFloat(GAME_MUSIC_VOLUME, gameMusicVolume);
+	}
+
+	public void UpdateGameMusicLowPass(float percentage)
+	{
+		gameMusicLowPass = Mathf.Lerp(800f, 22000f, percentage);
+		mixer.SetFloat(GAME_MUSIC_LOWPASS, gameMusicLowPass);
 	}
 
 	public void ReloadLevel()

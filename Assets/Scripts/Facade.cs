@@ -6,5 +6,6 @@
 	public static TextFontConfig FontConfig => TextFontConfig.Instance;
 	public static PlayerController Player => PlayerController.Instance;
 	public static SlotsManager Slots => SlotsManager.Instance;
+	public static RewardsManager Rewards => RewardsManager.Instance;
 	public static Index Prefabs => Index.Instance;
 }

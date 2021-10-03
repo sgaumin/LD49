@@ -56,6 +56,9 @@ TagManager:
   - name: Slot
     uniqueID: 3725776081
     locked: 0
+  - name: Reward
+    uniqueID: 2349186779
+    locked: 0
   - name: Bullet
     uniqueID: 667728391
     locked: 0

@@ -19,6 +19,8 @@ public class SlotDetector : MonoBehaviour
 			parent.IsComplete = true;
 			bullet.Kill();
 
+			Slots.PlayCollectSound();
+
 			GameController.GenerateImpulse();
 			GameController.SetChromaticAberation(0.8f, 0.1f, Ease.OutSine);
 		}

@@ -13,6 +13,8 @@ public class SlotsManager : MonoBehaviour
 
 	public List<Slot> Slots { get; private set; } = new List<Slot>();
 
+	[SerializeField] private AudioExpress completeSound;
+
 	private void Awake()
 	{
 		Instance = this;
@@ -39,6 +41,11 @@ public class SlotsManager : MonoBehaviour
 
 			yield return new WaitForSeconds(0.5f);
 		}
+	}
+
+	public void PlayCollectSound()
+	{
+		completeSound.Play();
 	}
 
 	public void CheckAllComplete()

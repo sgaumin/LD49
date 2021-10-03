@@ -72,7 +72,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 667728391
-  m_SortingLayer: 3
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: bfbce321b6214cb4c823de5628d84a3c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -137,3 +137,19 @@ MonoBehaviour:
   _body:
     _source: 0
     _localReference: {fileID: 0}
+  damageSound:
+    isUsingClips: 0
+    clip: {fileID: 8300000, guid: 74326a5b880f7774f9ad74d217f5a16e, type: 3}
+    clips: []
+    mixerGroup: {fileID: -2233176590787747905, guid: dbd143edd4df0224d92ac4ff39f0844e,
+      type: 2}
+    loopType: 0
+    timeBetweenLoop:
+      min: 1
+      max: 3
+    isPitchModified: 1
+    pitchMaxVariation:
+      min: -0.1
+      max: 0.1
+    autoDestroy: 0
+    multiplier: 5

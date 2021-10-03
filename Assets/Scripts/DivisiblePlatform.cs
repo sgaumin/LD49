@@ -10,13 +10,12 @@ using static Facade;
 public class DivisiblePlatform : Platform
 {
 	[SerializeField] private GameObject join;
-	[SerializeField] private float breakingForce = 500f;
 
 	private List<Platform> platforms = new List<Platform>();
 
 	protected override void OnStart()
 	{
-		platforms = GetComponentsInChildren<Platform>().ToList();
+		platforms = GetComponentsInChildren<Platform>(true).ToList();
 		base.OnStart();
 	}
 
@@ -24,16 +23,12 @@ public class DivisiblePlatform : Platform
 	{
 		if (point == join)
 		{
+			platforms.ForEach(x => x.gameObject.SetActive(true));
 			platforms.ForEach(x => x.transform.SetParent(transform.parent));
 			platforms.ForEach(x => x.Init());
-
-			GameController.GenerateImpulse();
-			GameController.SetChromaticAberation(0.8f, 0.125f, Ease.OutSine);
-
-			Player.Body.AddForce(breakingForce * Vector2.up);
-
 			Destroy(join);
-			Destroy(gameObject);
+
+			DestroyAfterImpact();
 		}
 		else
 		{

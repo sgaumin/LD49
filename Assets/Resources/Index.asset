@@ -18,5 +18,7 @@ MonoBehaviour:
     type: 3}
   slotPrefab: {fileID: 4050659100452271991, guid: 6fa4aad74e9adba4798c4697b199ff9e,
     type: 3}
+  rewardPrefab: {fileID: 5277969480944534441, guid: 70bd94fc3f9295d4db3ba72ff4df4d7d,
+    type: 3}
   smallImpactEffect: {fileID: 6559914750727299474, guid: 3e67e2a3ce2b7514a95d5b57629333b5,
     type: 3}

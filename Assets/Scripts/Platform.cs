@@ -13,6 +13,8 @@ public abstract class Platform : MonoBehaviour
 	private const float rotationStep = 5f;
 
 	[SerializeField] private bool initAtStart;
+	[SerializeField] private bool canBeDestroyed;
+	[SerializeField] protected float breakingForce = 500f;
 
 	[Header("Movements")]
 	[SerializeField] protected bool activeMovementX;
@@ -26,6 +28,9 @@ public abstract class Platform : MonoBehaviour
 	[SerializeField] private bool movementYReverse;
 	[Space]
 	[SerializeField] protected Ease movementEase = Ease.InOutSine;
+
+	[Header("Audio")]
+	[SerializeField] protected AudioExpress destructionSound;
 
 	[Header("References")]
 	[SerializeField] protected SpriteRenderer body;
@@ -60,6 +65,11 @@ public abstract class Platform : MonoBehaviour
 			transform.DOLocalMoveY(movementYValue * (movementYReverse ? -1 : 1), movementYDuration).SetRelative().SetEase(movementEase).SetLoops(-1, LoopType.Yoyo);
 	}
 
+	public void PlayDestruction()
+	{
+		destructionSound.Play();
+	}
+
 	public void Show()
 	{
 		if (body != null)
@@ -84,6 +94,12 @@ public abstract class Platform : MonoBehaviour
 		if (!hasBeenInitialized)
 			return;
 
+		if (canBeDestroyed)
+		{
+			DestroyAfterImpact();
+			return;
+		}
+
 		int multiplier = forcePosition.x - transform.position.x > 0 ? -1 : 1;
 
 		float angle = transform.eulerAngles.z;
@@ -99,9 +115,20 @@ public abstract class Platform : MonoBehaviour
 		transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, targetAngle));
 	}
 
+	protected void DestroyAfterImpact()
+	{
+		GameController.GenerateImpulse();
+		GameController.SetChromaticAberation(0.8f, 0.125f, Ease.OutSine);
+
+		Player.Body.AddForce(breakingForce * Vector2.up);
+		PlayDestruction();
+
+		Destroy(gameObject);
+	}
+
 	public void Disapear()
 	{
-		transform.DOScale(0f, 0.25f).SetEase(Ease.InSine).OnComplete(() => Destroy(gameObject));
+		transform.DOScale(0f, 0.15f).SetEase(Ease.InSine).OnComplete(() => Destroy(gameObject));
 	}
 
 	private void OnDestroy()
