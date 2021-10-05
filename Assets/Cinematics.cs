@@ -8,7 +8,7 @@ using Tools.Utils;
 using UnityEngine;
 using static Facade;
 
-public class Cinematics : MonoBehaviour
+public class Cinematics : GameSystem
 {
 	[SerializeField] private CanvasGroup cinematic1;
 	[SerializeField] private CanvasGroup cinematic2;
@@ -44,8 +44,9 @@ public class Cinematics : MonoBehaviour
 		complete = true;
 	}
 
-	private void Update()
+	protected override void Update()
 	{
+		base.Update();
 		if (complete && !isLoading && Input.GetButtonDown("Action"))
 		{
 			isLoading = true;

@@ -7,7 +7,7 @@ using Tools.Utils;
 using UnityEngine;
 using static Facade;
 
-public class TitleScreen : MonoBehaviour
+public class TitleScreen : GameSystem
 {
 	private bool isLoading;
 
@@ -18,8 +18,9 @@ public class TitleScreen : MonoBehaviour
 		fader.FadIn(fadDuration: 0.5f);
 	}
 
-	private void Update()
+	protected override void Update()
 	{
+		base.Update();
 		if (!isLoading && Input.GetButtonDown("Action"))
 		{
 			isLoading = true;
