@@ -98,15 +98,15 @@ public class HUD : MonoBehaviour
 
 	private IEnumerator SetupTimerCore()
 	{
-		for (int i = 0; i <= GameController.Timer; i++)
+		for (int i = 0; i <= GameController.JumpCount; i++)
 		{
-			timer.text = $"{i}s";
+			timer.text = $"{i}";
 
 			timer.transform.DOKill();
 			timer.transform.localScale *= 1.2f;
 			timer.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutSine);
 
-			yield return new WaitForSeconds(1f / GameController.Timer);
+			yield return new WaitForSeconds(1f / GameController.JumpCount);
 		}
 	}
 
@@ -126,10 +126,10 @@ public class HUD : MonoBehaviour
 
 	private IEnumerator StartTimerCore()
 	{
-		currentTimer = GameController.Timer;
+		currentTimer = GameController.JumpCount;
 		while (currentTimer >= 0)
 		{
-			timer.text = $"{currentTimer}s";
+			timer.text = $"{currentTimer}";
 
 			timer.transform.DOKill();
 			timer.transform.localScale *= 1.2f;
@@ -209,7 +209,7 @@ public class HUD : MonoBehaviour
 	{
 		while (currentTimer >= 0)
 		{
-			timer.text = $"{currentTimer}s";
+			timer.text = $"{currentTimer}";
 
 			timer.transform.DOKill();
 			timer.transform.localScale *= 1.2f;

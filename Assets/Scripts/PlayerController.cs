@@ -155,7 +155,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		if (isStatic)
 			return;
 
-		if (Input.GetButtonDown("Action"))
+		if (Input.GetMouseButtonDown(0))
 		{
 			if (GameController.LevelState == LevelState.Building && !isPushingGround && canPush)
 			{

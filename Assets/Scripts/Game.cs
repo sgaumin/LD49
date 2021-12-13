@@ -37,7 +37,7 @@ public class Game : GameSystem
 
 	[Header("Level Parameters")]
 	[SerializeField] private string levelName;
-	[SerializeField] private int timer = 10;
+	[SerializeField] private int jumpCount = 10;
 	[SerializeField] private int bulletCount = 4;
 	[SerializeField] private bool showTutorials;
 
@@ -126,7 +126,7 @@ public class Game : GameSystem
 			}
 		}
 	}
-	public int Timer => timer;
+	public int JumpCount => jumpCount;
 	public string LevelName => levelName;
 	public int BulletCount => bulletCount;
 	public Transform Spawn => spawnPlayer;
@@ -185,7 +185,7 @@ public class Game : GameSystem
 		if (cancelInput)
 			return;
 
-		if (LevelState == LevelState.Preparation && Input.GetButtonDown("Action"))
+		if (LevelState == LevelState.Preparation && Input.GetMouseButtonDown(0))
 		{
 			GameState = GameState.Play;
 			LevelState = LevelState.Building;
@@ -199,7 +199,7 @@ public class Game : GameSystem
 			ReloadLevel();
 			PlayBipSound();
 		}
-		if (canListenEndInput && LevelState == LevelState.End && Input.GetButtonDown("Action"))
+		if (canListenEndInput && LevelState == LevelState.End && Input.GetMouseButtonDown(0))
 		{
 			PlayBipSound();
 			if (Slots.Slots.All(x => x.IsComplete))
