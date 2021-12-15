@@ -59,7 +59,7 @@ public class ShootingRail : MonoBehaviour
 		setup = false;
 		closing = true;
 
-		yield return new WaitForSeconds(0.7f);
+		yield return new WaitForSeconds(0.4f);
 		spriteRenderer.DOFade(0f, 0.2f).SetEase(Ease.OutSine);
 	}
 }

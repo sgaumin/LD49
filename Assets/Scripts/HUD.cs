@@ -13,7 +13,7 @@ public class HUD : MonoBehaviour
 {
 	[Header("References")]
 	[SerializeField] private Transform bulletIconHolder;
-	[SerializeField] private TextMeshProUGUI timer;
+	[SerializeField] private TextMeshProUGUI jumpCount;
 	[SerializeField] private TextMeshProUGUI title;
 	[SerializeField] private TextMeshProUGUI help;
 	[SerializeField] private TextMeshProUGUI end;
@@ -24,9 +24,7 @@ public class HUD : MonoBehaviour
 	[SerializeField] private CanvasGroup tutorialBuilding;
 	[SerializeField] private CanvasGroup tutorialShooting;
 
-	private int currentTimer;
-	private Coroutine timerCore;
-	private Coroutine setupTimerCore;
+	private Coroutine setupJumpCountCore;
 	private List<Image> icons = new List<Image>();
 	private Coroutine setupCore;
 
@@ -49,6 +47,7 @@ public class HUD : MonoBehaviour
 		GameController.OnEndPhase += HidePhaseName;
 		GameController.OnEndPhase += StartRemoveAllIcon;
 
+		Player.OnPush += DisplayJumpCount;
 		Player.OnShoot += RemoveShootIcon;
 	}
 
@@ -64,11 +63,11 @@ public class HUD : MonoBehaviour
 		tutorialShooting.alpha = 0f;
 
 		// Timer
-		timer.color = timer.color.WithAlpha(0f);
-		timer.DOKill();
-		timer.DOFade(1f, 0.15f);
+		jumpCount.color = jumpCount.color.WithAlpha(0f);
+		jumpCount.DOKill();
+		jumpCount.DOFade(1f, 0.15f);
 
-		setupTimerCore = StartCoroutine(SetupTimerCore());
+		setupJumpCountCore = StartCoroutine(SetupJumpCountCore());
 
 		setupCore = StartCoroutine(SetupCore());
 	}
@@ -96,15 +95,15 @@ public class HUD : MonoBehaviour
 		help.DOFade(0f, 0.5f).SetEase(Ease.OutSine);
 	}
 
-	private IEnumerator SetupTimerCore()
+	private IEnumerator SetupJumpCountCore()
 	{
 		for (int i = 0; i <= GameController.JumpCount; i++)
 		{
-			timer.text = $"{i}";
+			jumpCount.text = $"{i}";
 
-			timer.transform.DOKill();
-			timer.transform.localScale *= 1.2f;
-			timer.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutSine);
+			jumpCount.transform.DOKill();
+			jumpCount.transform.localScale *= 1.2f;
+			jumpCount.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutSine);
 
 			yield return new WaitForSeconds(1f / GameController.JumpCount);
 		}
@@ -112,11 +111,11 @@ public class HUD : MonoBehaviour
 
 	private void StartBuildingPhase()
 	{
-		if (setupTimerCore != null)
+		jumpCount.text = $"{GameController.JumpCount}";
+		if (setupJumpCountCore != null)
 		{
-			StopCoroutine(setupTimerCore);
+			StopCoroutine(setupJumpCountCore);
 		}
-		timerCore = StartCoroutine(StartTimerCore());
 
 		if (GameController.ShowTutorials)
 		{
@@ -124,21 +123,22 @@ public class HUD : MonoBehaviour
 		}
 	}
 
-	private IEnumerator StartTimerCore()
+	private void DisplayJumpCount(int value)
 	{
-		currentTimer = GameController.JumpCount;
-		while (currentTimer >= 0)
+		if (value < 0)
+			return;
+
+		jumpCount.text = $"{value}";
+
+		jumpCount.transform.DOKill();
+		jumpCount.transform.localScale = Vector3.one * 1.2f;
+		jumpCount.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutSine);
+
+		if (value == 0 && jumpCount.color.a > 0f)
 		{
-			timer.text = $"{currentTimer}";
-
-			timer.transform.DOKill();
-			timer.transform.localScale *= 1.2f;
-			timer.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutSine);
-
-			yield return new WaitForSeconds(1f);
-			currentTimer--;
+			jumpCount.DOKill();
+			jumpCount.DOFade(0f, 0.2f);
 		}
-		GameController.StartShootingPhase();
 	}
 
 	private void StartShootingPhase()
@@ -196,40 +196,11 @@ public class HUD : MonoBehaviour
 
 	private void StopBuildingPhase()
 	{
-		StartCoroutine(StopTimerCore());
-
 		if (GameController.ShowTutorials)
 		{
 			tutorialBuilding.DOKill();
 			DOTween.To(() => tutorialBuilding.alpha, x => tutorialBuilding.alpha = x, 0f, 0.2f).SetEase(Ease.OutCubic);
 		}
-	}
-
-	private IEnumerator StopTimerCore()
-	{
-		while (currentTimer >= 0)
-		{
-			timer.text = $"{currentTimer}";
-
-			timer.transform.DOKill();
-			timer.transform.localScale *= 1.2f;
-			timer.transform.DOScale(Vector3.one, 0.025f).SetEase(Ease.OutSine);
-
-			yield return new WaitForSeconds(0.025f);
-			currentTimer--;
-		}
-
-		if (timerCore != null)
-		{
-			StopCoroutine(timerCore);
-		}
-		if (timer.color.a > 0f)
-		{
-			timer.DOKill();
-			timer.DOFade(0f, 0.2f);
-		}
-
-		yield return new WaitForSeconds(1f);
 	}
 
 	private void End()
@@ -276,11 +247,11 @@ public class HUD : MonoBehaviour
 
 		if (Slots.Slots.All(x => x.IsComplete))
 		{
-			end.text = "PRESS SPACE TO CONTINUE";
+			end.text = "CLICK TO CONTINUE";
 		}
 		else
 		{
-			end.text = "PRESS SPACE TO RETRY";
+			end.text = "CLICK TO RETRY";
 		}
 
 		GameController.canListenEndInput = true;

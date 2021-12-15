@@ -14,7 +14,9 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	public static PlayerController Instance { get; private set; }
 
 	public delegate void PlayerEventHandler();
+	public delegate void PlayerUpdateHUDHandler(int value);
 
+	public event PlayerUpdateHUDHandler OnPush;
 	public event PlayerEventHandler OnShoot;
 
 	[SerializeField] private bool isStatic;
@@ -28,6 +30,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	[Space]
 	[SerializeField] private float resetPushingDuration = 0.2f;
 	[SerializeField] private float checkGroundTiming = 0.05f;
+	[SerializeField] private float checkCountDuration = 0.5f;
 
 	[Header("Breathing Animations")]
 	[SerializeField] private float stretchingXFactor = 0.8f;
@@ -85,6 +88,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 	private bool canPush;
 	private Vector3 startLocalScale;
 	private AudioUnit horizontalAudioUnit;
+	private int currentJumpCount;
 
 	private void Awake()
 	{
@@ -99,6 +103,7 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 		GameController.OnTransitionPhase += DeactivateBody;
 		GameController.OnTransitionPhase += StartTransition;
+		GameController.OnTransitionPhase += CleanJumpCountAnimation;
 
 		GameController.OnShootingPhase += ActiveBody;
 		GameController.OnShootingPhase += ShowHoldingBullet;
@@ -116,6 +121,8 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 			canPush = true;
 			startGravity = Body.gravityScale;
 		}
+
+		currentJumpCount = GameController.JumpCount;
 
 		// Breathing Animation
 		startLocalScale = transform.localScale;
@@ -157,12 +164,12 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 
 		if (Input.GetMouseButtonDown(0))
 		{
-			if (GameController.LevelState == LevelState.Building && !isPushingGround && canPush)
+			if (GameController.LevelState == LevelState.Building && !isPushingGround && canPush && currentJumpCount >= 0)
 			{
+				OnPush?.Invoke(--currentJumpCount);
 				StartCoroutine(ResetPushing());
-
-				SetPushingAnimation();
 				isPushingGround = true;
+				SetPushingAnimation();
 				StopReleaseGravity();
 				Body.gravityScale *= pushingGravityModifier;
 			}
@@ -302,12 +309,22 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		canPush = true;
 	}
 
+	private IEnumerator CheckJumpCount()
+	{
+		yield return new WaitForSeconds(checkCountDuration);
+		if (currentJumpCount <= 0)
+		{
+			GameController.StartShootingPhase();
+		}
+	}
+
 	public void OnLanding()
 	{
 		jumpingSound.Play();
 		Freeze();
 		SetBreathingAnimation();
 		ReleaseGravity();
+		StartCoroutine(CheckJumpCount());
 	}
 
 	public void Kill()
@@ -316,6 +333,20 @@ public class PlayerController : MonoBehaviour, ICanTakeDamage
 		damageSound.Play();
 		SetBreathingAnimation();
 		GameController.StartShootingPhase();
+	}
+
+	private void CleanJumpCountAnimation()
+	{
+		StartCoroutine(CleanJumpCountAnimationCore());
+	}
+
+	private IEnumerator CleanJumpCountAnimationCore()
+	{
+		while (currentJumpCount >= 0)
+		{
+			OnPush?.Invoke(currentJumpCount--);
+			yield return new WaitForSeconds(0.025f);
+		}
 	}
 
 	private void StartTransition()
